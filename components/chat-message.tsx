@@ -1,14 +1,40 @@
 "use client"
-
-import { type ChatMessagePart, type ChatUIMessage } from "@/tools"
-import { AskUserPart } from "@/components/parts/ask-user-part"
-import { GithubRepoPart } from "@/components/parts/github-repo-part"
-import { SourcesPart } from "@/components/parts/sources-part"
-import { TextPart } from "@/components/parts/text-part"
-import { WebSearchPart } from "@/components/parts/web-search-part"
-import { Bubble, BubbleContent } from "@/components/ui/bubble"
-import { Message, MessageContent } from "@/components/ui/message"
-
+import { isToolUIPart, getToolName } from "ai"
+import type { ChatUIMessage } from "@/tools"
+import { TextPart } from "./parts/text-part"
+import { SourcesPart } from "./parts/sources-part"
+import { AskUserPart } from "./parts/ask-user-part"
+import { PlanResearchPart } from "./parts/plan-research-part"
+import { DiscoverToolsPart } from "./parts/discover-tools-part"
+import { ConnectAppsPart } from "./parts/connect-apps-part"
+import { QualifyCompanyPart } from "./parts/qualify-company-part"
+import { ScreenProspectPart } from "./parts/screen-prospect-part"
+import { CreateDraftPart } from "./parts/create-draft-part"
+import { FinishRunPart } from "./parts/finish-run-part"
+import { ExaSearchPart } from "./parts/exa-search-part"
+import { ApolloOrganizationSearchPart } from "./parts/apollo-organization-search-part"
+import { FirecrawlScrapePart } from "./parts/firecrawl-scrape-part"
+import { ApolloPeopleSearchPart } from "./parts/apollo-people-search-part"
+import { HunterDomainSearchPart } from "./parts/hunter-domain-search-part"
+import { HunterEmailVerifierPart } from "./parts/hunter-email-verifier-part"
+import { ZerobounceValidateEmailPart } from "./parts/zerobounce-validate-email-part"
+const renderers = {
+  ask_user: AskUserPart,
+  plan_research: PlanResearchPart,
+  discover_tools: DiscoverToolsPart,
+  connect_apps: ConnectAppsPart,
+  qualify_company: QualifyCompanyPart,
+  screen_prospect: ScreenProspectPart,
+  create_draft: CreateDraftPart,
+  finish_run: FinishRunPart,
+  EXA_SEARCH: ExaSearchPart,
+  APOLLO_ORGANIZATION_SEARCH: ApolloOrganizationSearchPart,
+  FIRECRAWL_SCRAPE: FirecrawlScrapePart,
+  APOLLO_PEOPLE_SEARCH: ApolloPeopleSearchPart,
+  HUNTER_DOMAIN_SEARCH: HunterDomainSearchPart,
+  HUNTER_EMAIL_VERIFIER: HunterEmailVerifierPart,
+  ZEROBOUNCE_VALIDATE_EMAIL: ZerobounceValidateEmailPart,
+}
 export function ChatMessage({
   message,
   isStreaming = false,
@@ -16,58 +42,25 @@ export function ChatMessage({
   message: ChatUIMessage
   isStreaming?: boolean
 }) {
-  if (message.role === "user") {
-    return (
-      <Message align="end">
-        <MessageContent>
-          <Bubble align="end" variant="muted">
-            <BubbleContent>
-              {message.parts
-                .filter((part) => part.type === "text")
-                .map((part) => part.text)
-                .join("")}
-            </BubbleContent>
-          </Bubble>
-        </MessageContent>
-      </Message>
-    )
-  }
-
   return (
-    <Message align="start">
-      <MessageContent>
-        {mergeTextParts(message.parts).map((part, index) => {
-          switch (part.type) {
-            case "text":
-              return <TextPart key={index} part={part} />
-            case "tool-github_repo":
-              return <GithubRepoPart key={part.toolCallId} part={part} />
-            case "tool-ask_user":
-              return <AskUserPart key={part.toolCallId} part={part} />
-            case "tool-web_search":
-              return <WebSearchPart key={part.toolCallId} part={part} />
-            default:
-              return null
-          }
-        })}
-        {!isStreaming && <SourcesPart parts={message.parts} />}
-      </MessageContent>
-    </Message>
+    <article
+      className={message.role === "user" ? "user-message" : "assistant-message"}
+    >
+      {message.role === "assistant" && (
+        <div className="eyebrow mb-3">Composio AI SDR</div>
+      )}
+      {message.parts.map((part, i) => {
+        if (part.type === "text") return <TextPart key={i} part={part} />
+        if (isToolUIPart(part)) {
+          const Component =
+            renderers[getToolName(part) as keyof typeof renderers]
+          return Component ? (
+            <Component key={part.toolCallId} part={part} />
+          ) : null
+        }
+        return null
+      })}
+      {!isStreaming && <SourcesPart parts={message.parts} />}
+    </article>
   )
-}
-
-// Web search replies stream one text part per citation, so join them back
-// into one markdown document.
-function mergeTextParts(parts: ChatMessagePart[]) {
-  return parts
-    .filter((part) => part.type !== "source-url")
-    .reduce<ChatMessagePart[]>((merged, part) => {
-      const last = merged.at(-1)
-      if (part.type === "text" && last?.type === "text") {
-        merged[merged.length - 1] = { ...part, text: last.text + part.text }
-        return merged
-      }
-      merged.push(part)
-      return merged
-    }, [])
 }

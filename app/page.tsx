@@ -4,9 +4,9 @@ import { MODELS } from "@/lib/models"
 import { Chat } from "@/components/chat"
 
 export const metadata: Metadata = {
-  title: "Chat",
+  title: "Composio AI SDR — Your keys. Your wallet.",
   description:
-    "A chatbot template built using shadcn/ui, shadcn/react and shadcn/typeset, powered by the Vercel AI Gateway.",
+    "Find verified prospects, track every research charge, and approve outreach drafts with your connected apps.",
 }
 
 export default function Page() {

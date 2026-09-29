@@ -1,16 +1,19 @@
 {
-  "name": "chatbot-template",
+  "name": "composio-ai-sdr",
   "version": "0.0.1",
   "type": "module",
   "private": true,
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx tests/safety.test.ts",
+    "discover": "node --env-file=.env.local --import tsx scripts/discover.ts",
+    "test:browser": "node scripts/check-browser.mjs"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.65",
@@ -18,7 +21,10 @@
     "@ai-sdk/openai": "^4.0.78",
     "@ai-sdk/react": "^4.0.121",
     "@base-ui/react": "^1.8.0",
+    "@composio/core": "0.22.0",
+    "@composio/vercel": "0.12.1",
     "@shadcn/react": "^0.3.1",
+    "@upstash/redis": "^1.39.0",
     "ai": "^7.0.118",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.4.0",
@@ -34,8 +40,9 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^24.19.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
@@ -44,6 +51,10 @@
     "prettier-plugin-tailwindcss": "^0.8.0",
     "shadcn": "^4.21.0",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=24.0.0"
   }
 }

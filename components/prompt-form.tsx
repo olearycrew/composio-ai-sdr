@@ -41,7 +41,7 @@ export function PromptForm({
     <form onSubmit={handleSubmit}>
       <InputGroup>
         <InputGroupTextarea
-          placeholder="Send a message…"
+          placeholder="Describe your ideal customers, your offer, and your research budget…"
           className="p-3.5"
           value={input}
           onChange={(event) => setInput(event.target.value)}

@@ -4,3 +4,7 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
   msw: false
+  esbuild: true
+
+minimumReleaseAgeExclude:
+  - '@composio/core@0.22.0'

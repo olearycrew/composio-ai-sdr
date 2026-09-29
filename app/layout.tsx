@@ -29,7 +29,7 @@ export default function RootLayout({
       )}
     >
       <body>
-        <ThemeProvider>
+        <ThemeProvider forcedTheme="light">
           <div className="flex h-svh flex-col">
             <SiteHeader />
             {children}

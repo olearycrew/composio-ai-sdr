@@ -38,3 +38,10 @@ pnpm-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local prospect data and account state
+.sdr/
+artifacts/live/
+
+playwright-report/
+test-results/
